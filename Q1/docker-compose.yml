@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: Q1/Dockerfile
+    image: adult-income-prediction-api:latest
+    container_name: adult-income-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ../dvc_remote_storage:/dvc_remote_storage
+    restart: always
