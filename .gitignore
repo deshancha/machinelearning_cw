@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Custom project ignores
+.DS_Store
+.Rhistory
+adult-income-api.tar
+
