@@ -1,0 +1,5 @@
+outs:
+- md5: 3f629bc3e701c6fa50c56a0ac79b73aa
+  size: 380506
+  hash: md5
+  path: xgboost_model.joblib
