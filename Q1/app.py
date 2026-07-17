@@ -7,6 +7,8 @@ import sys
 # t3: training & hyperparameter optimization
 # t4: Performance evaluation & model comparison
 # t6: Start FastAPI
+# t7: Publish XGBoost model to DVC
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
@@ -29,8 +31,9 @@ def get_container() -> AppContainer:
 
 def main():
     if len(sys.argv) < 2:
-        print("Specify Task: python app.py <t1/t2/t3/t4/t6>")
+        print("Specify Task: python app.py <t1/t2/t3/t4/t6/t7>")
         sys.exit(1)
+
         
     task = sys.argv[1].lower()
     container = get_container()
@@ -87,6 +90,13 @@ def main():
         # Start FastAPI
         server = container.api_server()
         server.start(host="0.0.0.0", port=8000)
+
+    elif task == "t7":
+        # Publish XGBoost model to DVC
+        publish_usecase = container.publish_model_usecase()
+        model_path = os.path.join(os.path.dirname(__file__), "outputs/models/xgboost_model.joblib")
+        publish_usecase.execute(model_path)
+
 
     else:
         logger.error(f"Task '{task}' is invalid")

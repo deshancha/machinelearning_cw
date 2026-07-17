@@ -1,1 +1,2 @@
 from .model_evaluation_usecase import ModelEvaluationUseCase
+from .publish_model_usecase import PublishModelUseCase

@@ -13,6 +13,8 @@ from task_2.domain.usecases.generate_eda_plots_usecase import GenerateEdaPlotsUs
 from task_3.domain.usecases.train_and_tune_usecase import TrainAndTuneUseCase
 
 from task_4.domain.usecases.model_evaluation_usecase import ModelEvaluationUseCase
+from task_4.domain.usecases.publish_model_usecase import PublishModelUseCase
+
 from task_6.domain.usecases.income_prediction_usecase import IncomePredictionUseCase
 from task_6.data.manager.api_server_imp import ApiServerImp
 
@@ -74,6 +76,11 @@ class AppContainer(containers.DeclarativeContainer):
     model_evaluation_usecase = providers.Factory(
         ModelEvaluationUseCase,
         data_loader=data_loader,
+        logger=logger
+    )
+
+    publish_model_usecase = providers.Factory(
+        PublishModelUseCase,
         logger=logger
     )
 
