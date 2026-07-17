@@ -16,6 +16,7 @@ from task_4.domain.usecases.model_evaluation_usecase import ModelEvaluationUseCa
 from task_4.domain.usecases.publish_model_usecase import PublishModelUseCase
 
 from task_6.domain.usecases.income_prediction_usecase import IncomePredictionUseCase
+from task_6.domain.usecases.load_model_from_dvc_usecase import LoadModelFromDvcUseCase
 from task_6.data.manager.api_server_imp import ApiServerImp
 
 class AppContainer(containers.DeclarativeContainer):
@@ -85,9 +86,15 @@ class AppContainer(containers.DeclarativeContainer):
     )
 
     # Use Cases for Task 6
+    load_model_from_dvc_usecase = providers.Factory(
+        LoadModelFromDvcUseCase,
+        logger=logger
+    )
+
     income_prediction_usecase = providers.Factory(
         IncomePredictionUseCase,
         model_dir=config.models.model_dir,
+        load_model_from_dvc_usecase=load_model_from_dvc_usecase,
         logger=logger
     )
 

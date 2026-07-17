@@ -1,32 +1,17 @@
 import os
-import joblib
 import pandas as pd
-import dvc.api
 from typing import List
 from core.util.logger import ILogger
 from task_6.domain.model.models import PredictionInput, PredictionResponse
+from task_6.domain.usecases.load_model_from_dvc_usecase import LoadModelFromDvcUseCase
 
 class IncomePredictionUseCase:
-    def __init__(self, model_dir: str, logger: ILogger):
+    def __init__(self, model_dir: str, load_model_from_dvc_usecase: LoadModelFromDvcUseCase, logger: ILogger):
         self.logger = logger
         self.model_dir = model_dir
         self.model_path = "Q1/outputs/models/xgboost_model.joblib"
-        self.model = None
         
-        self._load_model()
-
-    def _load_model(self):
-        self.logger.info(f"IncomePredictionUseCase loading model via DVC programmatically from: {self.model_path}")
-        try:
-            with dvc.api.open(
-                path=self.model_path,
-                mode='rb'
-            ) as model_file:
-                self.model = joblib.load(model_file)
-            self.logger.info("Loaded XGBoost model via DVC OK")
-        except Exception as e:
-            self.logger.error(f"Failed to load model via DVC: {str(e)}")
-            raise e
+        self.model = load_model_from_dvc_usecase.execute(self.model_path)
 
     def execute(self, inputs: List[PredictionInput]) -> List[PredictionResponse]:
         self.logger.info(f"Exec IncomePredictionUseCase for {len(inputs)} records")
