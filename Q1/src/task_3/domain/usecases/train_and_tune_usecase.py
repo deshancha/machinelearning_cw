@@ -171,8 +171,7 @@ class TrainAndTuneUseCase:
         xgb_param_dist = {
             'clf__n_estimators': [100, 200],
             'clf__max_depth': [3, 5, 7],
-            'clf__learning_rate': [0.01, 0.1, 0.2],
-            'clf__min_child_weight': [1, 3, 5]
+            'clf__learning_rate': [0.01, 0.1, 0.2]
         }
         
         xgb_search = RandomizedSearchCV(

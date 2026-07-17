@@ -12,7 +12,7 @@ class LoadModelFromDvcUseCase:
             with dvc.api.open(
                 path=model_path,
                 mode='rb',
-                rev='xgboost.v2'
+                rev='xgboost.v1'
             ) as model_file:
                 model = joblib.load(model_file)
             self.logger.info("Loaded XGBoost model via DVC OK")
