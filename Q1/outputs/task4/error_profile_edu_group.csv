@@ -1,0 +1,6 @@
+edu_group,Total Instances,Errors Count,Error Rate (%),False Positives,False Negatives
+Advanced,768,155,20.182291666666664,135,20
+Bachelors,1512,302,19.973544973544975,238,64
+Some-College,2711,484,17.853190704537074,400,84
+High-School,2915,474,16.260720411663808,364,110
+Low,1129,70,6.200177147918512,20,50

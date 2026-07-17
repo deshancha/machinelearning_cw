@@ -8,7 +8,7 @@ def client():
         yield c
 
 def test_single_prediction_low_income(client):
-    # A sample payload likely to yield <=50K (young, low education, low hours)
+    # Payload for <=50K (young, low education, low hours)
     payload = {
         "age": 18,
         "workclass": "Private",
@@ -34,7 +34,7 @@ def test_single_prediction_low_income(client):
     assert data["label"] == "<=50K"
 
 def test_single_prediction_high_income(client):
-    # A sample payload likely to yield >50K (mid-career, advanced degree, high capital gain)
+    # PAyload fr >50K (mid-career, advanced degree, high capital gain)
     payload = {
         "age": 45,
         "workclass": "Private",
@@ -56,7 +56,7 @@ def test_single_prediction_high_income(client):
     assert "prediction" in data
     assert "label" in data
     assert "probability" in data
-    # High capital gain of 15k should result in >50K prediction
+    # High capital gain -> >50K prediction
     assert data["prediction"] == 1
     assert data["label"] == ">50K"
 

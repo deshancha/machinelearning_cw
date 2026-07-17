@@ -1,0 +1,16 @@
+pandas==2.3.3
+numpy==2.0.2
+matplotlib>=3.7.0
+seaborn>=0.12.0
+scikit-learn==1.6.1
+ucimlrepo>=0.0.7
+dependency-injector==4.49.1
+python-dotenv==1.2.1
+fastapi>=0.100.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
+httpx>=0.24.0
+xgboost==2.1.4
+imbalanced-learn==0.12.4
+dvc>=3.0.0
+

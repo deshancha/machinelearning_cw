@@ -190,7 +190,7 @@ class ModelEvaluationUseCase:
                 error_summary_lines.append(summary_str)
                 
         # Write general logs for error analysis
-        with open(os.path.join(output_dir, "error_analysis_summary.txt"), "w") as f:
+        with open(os.path.join(output_dir, "error_summary.txt"), "w") as f:
             f.write("\n".join(error_summary_lines))
             
         self.logger.info("ModelEvaluationUseCase execution complete.")

@@ -1,0 +1,15 @@
+
+--- Error Profile by 'sex' ---
+        Total Instances  Errors Count  Error Rate (%)  False Positives  False Negatives
+sex                                                                                    
+Male               6093          1249           20.50             1006              243
+Female             2942           236            8.02              151               85
+
+--- Error Profile by 'edu_group' ---
+              Total Instances  Errors Count  Error Rate (%)  False Positives  False Negatives
+edu_group                                                                                    
+Advanced                  768           155           20.18              135               20
+Bachelors                1512           302           19.97              238               64
+Some-College             2711           484           17.85              400               84
+High-School              2915           474           16.26              364              110
+Low                      1129            70            6.20               20               50

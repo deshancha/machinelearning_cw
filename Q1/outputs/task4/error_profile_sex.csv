@@ -1,0 +1,3 @@
+sex,Total Instances,Errors Count,Error Rate (%),False Positives,False Negatives
+Male,6093,1249,20.498933202035122,1006,243
+Female,2942,236,8.021753908905506,151,85
