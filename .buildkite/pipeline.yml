@@ -21,11 +21,12 @@ steps:
 
   - label: ":docker: Build Docker Image"
     key: "build-image"
-    branches: "release"
+    branches: "release/*"
     plugins:
       - docker-build#v1.15.0:
           image-name: "adult-income-prediction-api"
           tag: "latest"
-          context: "./Q1"
-          dockerfile: "./Q1/Dockerfile"
+          context: "."
+          dockerfile: "Q1/Dockerfile"
+
 

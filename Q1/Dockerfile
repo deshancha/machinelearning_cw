@@ -23,6 +23,7 @@ COPY Q1/app.py /app/
 # Copy Git and DVC configurations to resolve model tracks inside the container
 COPY .git /app/.git
 COPY .dvc /app/.dvc
+COPY Q1/outputs/models/xgboost_model.joblib.dvc /app/Q1/outputs/models/xgboost_model.joblib.dvc
 
 # Expose port for FastAPI
 EXPOSE 8000
