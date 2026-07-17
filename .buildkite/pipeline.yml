@@ -1,0 +1,31 @@
+steps:
+  - label: ":python: Static analysis and API Unit Tests"
+    key: "lint-and-test"
+    plugins:
+      - docker#v5.9.0:
+          image: "python:3.10"
+          workdir: "/app"
+          environment:
+            - "PYTHONPATH=/app/Q1/src"
+          command:
+            - "sh"
+            - "-c"
+            - |
+              python -m pip install --upgrade pip
+              pip install -f Q1/requirements.txt
+              flake8 Q1/src --count --select=E9,F63,F7,F82 --show-source --statistics
+              # Run pytest
+              pytest Q1/src/task_6/tests/
+
+  - wait
+
+  - label: ":docker: Build Docker Image"
+    key: "build-image"
+    branches: "release"
+    plugins:
+      - docker-build#v1.15.0:
+          image-name: "adult-income-prediction-api"
+          tag: "latest"
+          context: "./Q1"
+          dockerfile: "./Q1/Dockerfile"
+
