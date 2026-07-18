@@ -4,14 +4,12 @@ import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from core.util.logger import ILogger
 
+# Notes - Even use SARIMAX we do not specify seasonal_order, BTC no use seasonal factors
 class TrainArimaUseCase:
     def __init__(self, logger: ILogger):
         self.logger = logger
 
     def tune(self, train_series: pd.Series, p_values=[0, 1, 2], d_values=[1], q_values=[0, 1, 2]) -> tuple:
-        """
-        Grid search ARIMA -> lowest AIC.
-        """
         self.logger.info("Tuning ARIMA parameters")
         best_aic = float("inf")
         best_order = (1, 1, 1) # Default baseline order
@@ -20,7 +18,7 @@ class TrainArimaUseCase:
             for d in d_values:
                 for q in q_values:
                     try:
-                        # Fit model on training series
+                        # Fit model on training series, seasonal_order param no sue here (ie BTC)
                         model = SARIMAX(train_series, order=(p, d, q), enforce_stationarity=False)
                         fit_res = model.fit(disp=False)
                         

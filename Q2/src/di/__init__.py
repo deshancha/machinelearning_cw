@@ -1,1 +1,1 @@
-from di.container import AppContainer
+from .container import AppContainer
