@@ -1,0 +1,1 @@
+from core.domain.usecases.collect_market_data_usecase import CollectMarketDataUseCase
