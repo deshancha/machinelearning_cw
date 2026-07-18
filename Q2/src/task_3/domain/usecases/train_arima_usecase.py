@@ -31,7 +31,7 @@ class TrainArimaUseCase:
         return best_order
 
     def evaluate(self, train_series: pd.Series, test_series: pd.Series, order: tuple, model_path: str = None) -> pd.Series:
-        self.logger.info(f"Fitting ARIMA{order} on training data and running rolling validation on test data...")
+        self.logger.info(f"Fitting ARIMA{order} on training data")
         model = SARIMAX(train_series, order=order, enforce_stationarity=False, enforce_invertibility=False)
         model_fit = model.fit(disp=False)
         
@@ -44,5 +44,6 @@ class TrainArimaUseCase:
         full_series = pd.concat([train_series, test_series])
         res = model_fit.apply(full_series)
         
+        self.logger.info("Predicting on test set")
         predictions = res.fittedvalues.iloc[-len(test_series):]
         return predictions
