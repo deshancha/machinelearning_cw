@@ -1,3 +1,4 @@
+from IPython.core import display_functions
 import os
 import pandas as pd
 import numpy as np
@@ -38,7 +39,7 @@ class EdaPlotsUseCase:
                 
         if volume_col:
             plt.figure(figsize=(12, 4))
-            plt.bar(df['Date'], df[volume_col], label='Trading Volume', color='royalblue', alpha=0.6)
+            plt.plot(df['Date'], df[volume_col], label='Trading Volume', color='royalblue', alpha=0.9, linewidth=1.5)
             plt.title('Bitcoin Historical Trading Volume', fontsize=14)
             plt.xlabel('Date')
             plt.ylabel('Volume')
