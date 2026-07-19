@@ -15,45 +15,19 @@ class GarchModelingUseCase:
     def __init__(self, logger: ILogger):
         self.logger = logger
 
-    def check_arch_effects(self, df: pd.DataFrame, returns_col: str = 'Returns', save_dir: str = "plots") -> dict:
-        os.makedirs(save_dir, exist_ok=True)
+    def check_arch_effects(self, df: pd.DataFrame, returns_col: str = 'Returns') -> dict:
         self.logger.info("Checking for ARCH effects on returns...")
         returns = df[returns_col].dropna()
         
-        # 1. Rolling Volatility Plot
-        rolling_std = returns.rolling(window=30).std() * np.sqrt(365) * 100
-        plt.figure(figsize=(12, 4))
-        plt.plot(df['Date'], rolling_std, color='darkred', label='30-day Rolling Volatility (Annualized %)')
-        plt.title('Bitcoin 30-day Rolling Volatility Over Time', fontsize=14)
-        plt.xlabel('Date')
-        plt.ylabel('Volatility (%)')
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(os.path.join(save_dir, 'btc_rolling_volatility.png'), dpi=150)
-        plt.close()
+        # Run ARCH-LM test on returns mean 
+        _, p_val, _, _ = het_arch(returns - returns.mean(), maxlag=10)
         
-        # 2. Engle's ARCH test on returns
-        mean_adjusted_returns = returns - returns.mean()
-        lm_stat, p_val, f_stat, f_pval = het_arch(mean_adjusted_returns, maxlag=10)
+        self.logger.info(f"ARCH-LM Test done. p-value: {p_val:.6e}")
         
-        self.logger.info("Engle's ARCH-LM Test for Conditional Heteroscedasticity completed.")
-        self.logger.info(f"Lag-10 LM Statistic: {lm_stat:.6f} | p-value: {p_val:.6e}")
-        
-        has_arch_effects = p_val < 0.05
-        
-        # 3. Autocorrealtion of Squared Returns Plot
-        plt.figure(figsize=(12, 4))
-        plot_acf(mean_adjusted_returns ** 2, lags=40, ax=plt.gca(), color='purple', title='Autocorrelation of Squared Returns')
-        plt.xlabel('Lags')
-        plt.ylabel('Autocorrelation')
-        plt.tight_layout()
-        plt.savefig(os.path.join(save_dir, 'btc_squared_returns_acf.png'), dpi=150)
-        plt.close()
-        
+        # 0.05 is the significance level
         return {
-            'lm_stat': lm_stat,
             'p_value': p_val,
-            'has_arch_effects': has_arch_effects
+            'has_arch_effects': p_val < 0.05
         }
 
     def fit_garch(self, df: pd.DataFrame, returns_col: str = 'Returns', save_dir: str = "plots", model_path: str = None) -> dict:
