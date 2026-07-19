@@ -18,7 +18,7 @@ class TrainArimaUseCase:
             for d in d_values:
                 for q in q_values:
                     try:
-                        # Omit seasonal_order parameters as crypto cycles do not follow rigid seasonal frequencies
+                        # Omit seasonal_order, crypto not follow seasonal frequencies
                         model = SARIMAX(train_series, order=(p, d, q), enforce_stationarity=False)
                         fit_res = model.fit(disp=False)
                         
