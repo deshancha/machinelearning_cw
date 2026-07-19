@@ -24,6 +24,6 @@ class StationarityTestUseCase:
         
         self.logger.info(f"ADF Statistic : {result[0]:.6f}")
         self.logger.info(f"p-value : {result[1]:.6e}")
-        self.logger.info(f"Stationarity Result : {'Stationary' if is_stationary else 'Non-Stationary'} (5% sig level)")
+        self.logger.info(f"Stationarity Result : {'Stationary' if is_stationary else 'Non-Stationary'} (5% Significance level)")
         
         return report, is_stationary
