@@ -62,7 +62,8 @@ class DataCleaningUseCase:
 
         # Compute percentage returns for volatility analysis
         df['Returns'] = df['Close'].pct_change() * 100
-        df = df.dropna(subset=['Returns']).reset_index(drop=True)
+        df['Returns'] = df['Returns'].fillna(0.0)
+
         
         cleaned_missing = df.isnull().sum().sum()
         self.logger.info(f"cleaning done. missing: {cleaned_missing}")
