@@ -17,22 +17,32 @@ class DataPreparationUseCase:
         df = pd.read_csv(path)
         
         # If requested > CSV Size, make them dynamically (Scalability part need this)
-        costs, labor_hours, profits = df['cost'].values, df['labor'].values, df['profit'].values
+        # Load cost, profit, dev hours, and name
+        costs = df['cost'].values
+        dev_hours = df['labor'].values
+        profits = df['profit'].values
+        names = df['name'].values
 
         if num_projects <= len(df):
-            costs, labor_hours, profits = costs[:num_projects], labor_hours[:num_projects], profits[:num_projects]
+            costs = costs[:num_projects]
+            dev_hours = dev_hours[:num_projects]
+            profits = profits[:num_projects]
+            names = names[:num_projects]
         else:
-            # additional cost, labor and profit
-            ext_costs, ext_labor, ext_profits = self.generate_additional_projects(num_projects - len(df), seed)
-            costs, labor_hours, profits = np.concatenate([costs, ext_costs]), np.concatenate([labor_hours, ext_labor]), np.concatenate([profits, ext_profits])
+            # additional cost, dev hours, profit, and name
+            ext_costs, ext_dev_hours, ext_profits, ext_names = self.generate_additional_projects(num_projects - len(df), seed)
+            costs = np.concatenate([costs, ext_costs])
+            dev_hours = np.concatenate([dev_hours, ext_dev_hours])
+            profits = np.concatenate([profits, ext_profits])
+            names = np.concatenate([names, ext_names])
 
-        projects = [Project(id=i, profit=float(profits[i]), cost=float(costs[i]), labor=float(labor_hours[i])) for i in range(num_projects)]
+        projects = [Project(id=i, name=names[i], profit=float(profits[i]), cost=float(costs[i]), dev_hours=float(dev_hours[i])) for i in range(num_projects)]
         
         # Set org capacity to 50% of total projects required
         budget = float(np.round(sum(p.cost for p in projects) * 0.50, 1))
-        labor_limit = float(np.round(sum(p.labor for p in projects) * 0.50, 1))
+        dev_hours_limit = float(np.round(sum(p.dev_hours for p in projects) * 0.50, 1))
 
-        self.logger.info(f"Loaded {num_projects} projects. Budget: {budget}k, dev hours limit: {labor_limit}h")
+        self.logger.info(f"Loaded {num_projects} projects. Budget: {budget}k, dev hours limit: {dev_hours_limit}h")
 
         # Load constraints
         df_const = pd.read_csv(c_path)
@@ -49,12 +59,12 @@ class DataPreparationUseCase:
                 elif row['constraint_type'] == "dependency":
                     dependencies.append((a, b))
 
-        self.plot_proj_distribution(costs, profits, labor_hours, num_projects, plot_dir)
+        self.plot_proj_distribution(costs, profits, dev_hours, num_projects, plot_dir)
 
         return AllocationInstance(
             projects=projects,
             budget=budget,
-            labor_limit=labor_limit,
+            dev_hours_limit=dev_hours_limit,
             mutual_exclusions=mutual_exclusions,
             dependencies=dependencies
         )
@@ -63,20 +73,21 @@ class DataPreparationUseCase:
         """Gen extra projects for scalability"""
         np.random.seed(seed)
         costs = np.round(np.random.uniform(15.0, 150.0, count), 1)
-        labor = np.round(np.random.uniform(20.0, 160.0, count), 1)
-        profits = np.round(1.3 * costs + 0.6 * labor + np.random.uniform(-15.0, 35.0, count), 1)
+        dev_hours = np.round(np.random.uniform(20.0, 160.0, count), 1)
+        profits = np.round(1.3 * costs + 0.6 * dev_hours + np.random.uniform(-15.0, 35.0, count), 1)
         profits = np.maximum(profits, 5.0)
-        return costs, labor, profits
+        names = np.array([f"Extra_{i}" for i in range(count)])
+        return costs, dev_hours, profits, names
 
-    def plot_proj_distribution(self, costs, profits, labor_hours, num_projects, plot_dir):
+    def plot_proj_distribution(self, costs, profits, dev_hours, num_projects, plot_dir):
         """Cost vs Profit scatter plot
         - X: cost
         - Y: profit
-        - Size: Labor hours compare
+        - Size: Dev hours compare
         """
         os.makedirs(plot_dir, exist_ok=True)
         fig, ax = plt.subplots(figsize=(8, 6))
-        ax.scatter(costs, profits, s=labor_hours * 3, alpha=0.7)
+        ax.scatter(costs, profits, s=dev_hours * 3, alpha=0.7)
         ax.set_title("Project (Cost vs Profit)")
         ax.set_xlabel("Capital Cost ($K)")
         ax.set_ylabel("Expected Profit ($K)")
