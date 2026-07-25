@@ -1,0 +1,7 @@
+constraint_type,project_a,project_b
+mutual_exclusion,3,7
+mutual_exclusion,12,18
+mutual_exclusion,22,27
+dependency,8,2
+dependency,15,10
+dependency,25,20
