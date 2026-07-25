@@ -17,7 +17,6 @@ class DataPreparationUseCase:
         df = pd.read_csv(path)
         
         # If requested > CSV Size, make them dynamically (Scalability part need this)
-        # Load cost, profit, dev hours, and name
         costs = df['cost'].values
         dev_hours = df['labor'].values
         profits = df['profit'].values
