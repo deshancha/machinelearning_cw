@@ -9,18 +9,18 @@ class GeneticAlgorithmUseCase:
     def __init__(self, logger: ILogger):
         self.logger = logger
 
+    # tuning_results = ga_solver_usecase.tune(instance, pop_sizes=[50, 100], gens=[50, 100])
     def tune(self, instance: AllocationInstance, pop_sizes: List[int], gens: List[int]) -> Dict[str, Any]:
         """
-        Tune hyperparameters and return the best tuning results.
+        GA and hyper param tuning with dynamic pop size and generation number
         """
-        self.logger.info("Starting hyperparameter tuning for GA...")
         best_profit = -1.0
         best_params = {}
         
         results = []
         for pop_size in pop_sizes:
             for gen in gens:
-                sol, _ = self.solve(instance, pop_size=pop_size, generations=gen)
+                sol, _ = self.findBestProjects(instance, pop_size=pop_size, generations=gen)
                 results.append({
                     "pop_size": pop_size,
                     "generations": gen,
@@ -34,7 +34,7 @@ class GeneticAlgorithmUseCase:
         self.logger.info(f"Tuning complete. Best params: {best_params} with profit: {best_profit:.1f}k")
         return {"best_params": best_params, "best_profit": best_profit, "all_results": results}
 
-    def solve(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8) -> Tuple[AllocationSolution, List[float]]:
+    def findBestProjects(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8) -> Tuple[AllocationSolution, List[float]]:
         
         N = len(instance.projects)
         mutation_rate = 1.0 / N
@@ -68,7 +68,7 @@ class GeneticAlgorithmUseCase:
             # next generation, (with/without elitism)
             new_population = self.elitism(population, fitnesses) # []
                 
-            # Crossover & Mutation (Note 3)
+            # Crossover & Mutation
             while len(new_population) < pop_size:
                 parent1 = self.tournament_selection(population, fitnesses, tournament_size)
                 parent2 = self.tournament_selection(population, fitnesses, tournament_size)
@@ -146,13 +146,13 @@ class GeneticAlgorithmUseCase:
 
     def crossover(self, parent1: List[int], parent2: List[int]) -> Tuple[List[int], List[int]]:
         """
-        Combine 2 parents to create child, child inherits best traits
+        mixing 2 parenets -> create 2 children, child inherits best traits. uses uniform corss(coin toss)
         """
         child1 = parent1.copy()
         child2 = parent2.copy()
         for i in range(len(parent1)):
             if np.random.rand() < 0.5:
-                child1[i], child2[i] = parent2[i], parent1[i]
+                child1[i], child2[i] = parent2[i], parent1[i] # crossed
         return child1, child2
 
     def mutate(self, chromosome: List[int], mutation_rate: float) -> List[int]:
@@ -162,7 +162,7 @@ class GeneticAlgorithmUseCase:
         mutated = chromosome.copy()
         for i in range(len(mutated)):
             if np.random.rand() < mutation_rate:
-                mutated[i] = 1 - mutated[i]  # Bit-flip (1->0 or 0->1)
+                mutated[i] = 1 - mutated[i]  # flip the bit (1->0 or 0->1)
         return mutated
 
     def tournament_selection(self, population: List[List[int]], fitnesses: List[float], tournament_size: int = 3) -> List[int]:
@@ -191,46 +191,35 @@ class GeneticAlgorithmUseCase:
                      history_best: List[float], plot_dir: str = "plots"):
         os.makedirs(plot_dir, exist_ok=True)
         
-        # 2. Plot Portfolio Selection results
+        # Project Selection 
         fig, ax = plt.subplots(figsize=(10, 5))
         project_ids = [p.id for p in instance.projects]
         profits = [p.profit for p in instance.projects]
         colors = ['forestgreen' if val == 1 else 'crimson' for val in solution.selection]
         
         bars = ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
-        ax.set_title(f"GA Portfolio Selection (Selected: {sum(solution.selection)} / {len(solution.selection)} projects)", fontsize=13, fontweight='bold')
-        ax.set_xlabel("Project ID", fontsize=11)
-        ax.set_ylabel("Expected Profit ($k)", fontsize=11)
+        ax.set_title(f"Selected {sum(solution.selection)} / {len(solution.selection)} projects)")
+        ax.set_xlabel("Proj ID")
+        ax.set_ylabel("Profit ($k)")
         ax.set_xticks(project_ids)
         ax.set_xticklabels([f"P{i}" for i in project_ids], rotation=45, fontsize=9)
         ax.grid(axis='y', linestyle='--', alpha=0.5)
-        
-        # Legend
-        from matplotlib.patches import Patch
-        legend_elements = [
-            Patch(facecolor='forestgreen', label='Select'),
-            Patch(facecolor='crimson', label='Reject')
-        ]
-        ax.legend(handles=legend_elements, loc='upper right')
         
         plt.tight_layout()
         selection_path = os.path.join(plot_dir, "ga_portfolio_selection.png")
         plt.savefig(selection_path, dpi=150)
         plt.close()
-        self.logger.info(f"Saved portfolio selection plot to {selection_path}")
-
-        # ---- Simple Convergence Plot (Best Fitness) ----
-        if history_best:
-            fig2, ax2 = plt.subplots(figsize=(8, 4))
-            ax2.plot(history_best, label='Best Fitness', color='forestgreen')
-            ax2.set_xlabel('Generation', fontsize=11)
-            ax2.set_ylabel('Profit (Fitness)', fontsize=11)
-            ax2.legend()
-            ax2.grid(True, linestyle=':', alpha=0.6)
-            plt.tight_layout()
-            conv_path = os.path.join(plot_dir, "ga_convergence.png")
-            plt.savefig(conv_path, dpi=150)
-            plt.close()
-            self.logger.info(f"Saved convergence plot to {conv_path}")
+        
+        # Best Fitness Curve
+        fig2, ax2 = plt.subplots(figsize=(8, 4))
+        ax2.plot(history_best, label='Best Fitness', color='forestgreen')
+        ax2.set_xlabel('Generation')
+        ax2.set_ylabel('Profit (Fitness)')
+        ax2.legend()
+        ax2.grid(True)
+        plt.tight_layout()
+        conv_path = os.path.join(plot_dir, "ga_convergence.png")
+        plt.savefig(conv_path, dpi=150)
+        plt.close()
 
     
