@@ -38,10 +38,13 @@ class DataPreparationUseCase:
         projects = [Project(id=i, name=names[i], profit=float(profits[i]), cost=float(costs[i]), dev_hours=float(dev_hours[i])) for i in range(num_projects)]
         
         # Set org capacity to 50% of total projects required
-        budget = float(np.round(sum(p.cost for p in projects) * 0.50, 1))
-        dev_hours_limit = float(np.round(sum(p.dev_hours for p in projects) * 0.50, 1))
+        total_cost = sum(p.cost for p in projects)
+        budget = float(np.round(total_cost * 0.50, 1))
+        total_dev_hours = sum(p.dev_hours for p in projects)
+        dev_hours_limit = float(np.round(total_dev_hours * 0.50, 1))
 
-        self.logger.info(f"Loaded {num_projects} projects. Budget: {budget}k, dev hours limit: {dev_hours_limit}h")
+        self.logger.info(f"Loaded {num_projects} projects. Total Cost: {total_cost:,.1f}k, Total Dev Hours: {total_dev_hours:,.1f}h")
+        self.logger.info(f"Organization Capacity: Budget: {budget:,.1f}k, Dev Hours limit: {dev_hours_limit:,.1f}h")
 
         # Load constraints
         df_const = pd.read_csv(c_path)
