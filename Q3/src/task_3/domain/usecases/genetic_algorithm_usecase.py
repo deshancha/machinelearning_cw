@@ -9,8 +9,8 @@ class GeneticAlgorithmUseCase:
     def __init__(self, logger: ILogger):
         self.logger = logger
 
-    # tuning_results = ga_solver_usecase.tune(instance, pop_sizes=[50, 100], gens=[50, 100])
-    def tune(self, instance: AllocationInstance, pop_sizes: List[int], gens: List[int]) -> Dict[str, Any]:
+    # uning_results = ga_solver_usecase.hyperParamTune(instance, pop_sizes=[50, 100, 200, 300], gens=[50, 100, 150, 200])
+    def hyperParamTune(self, instance: AllocationInstance, pop_sizes: List[int], gens: List[int]) -> Dict[str, Any]:
         """
         GA and hyper param tuning with dynamic pop size and generation number
         """
