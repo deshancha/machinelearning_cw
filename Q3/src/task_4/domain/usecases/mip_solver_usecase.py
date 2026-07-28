@@ -1,6 +1,7 @@
 import os
 import time
 import pulp
+import matplotlib.pyplot as plt
 from typing import Tuple
 from core.util.logger import ILogger
 from core.domain.entities import Project, AllocationInstance, AllocationSolution
@@ -85,3 +86,20 @@ class MipSolverUseCase:
         self.logger.info(f"Time taken: {solve_time:.4f}s. Status: {pulp.LpStatus[status]}, OK: {is_ok}")
         return solution, solve_time
 
+    def plot_results(self, instance: AllocationInstance, solution: AllocationSolution, plot_dir: str = "plots"):
+        os.makedirs(plot_dir, exist_ok=True)
+        
+        fig, ax = plt.subplots(figsize=(10, 5))
+        project_ids = [p.id for p in instance.projects]
+        profits = [p.profit for p in instance.projects]
+        colors = ['forestgreen' if val == 1 else 'crimson' for val in solution.selection]
+        
+        bars = ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
+        ax.set_title(f"(Selected: {sum(solution.selection)} / {len(solution.selection)} projects)")
+        ax.set_xlabel("ID")
+        ax.set_ylabel("Profit ($k)")
+        ax.set_xticks(project_ids)
+        
+        selection_path = os.path.join(plot_dir, "mip_portfolio_selection.png")
+        plt.savefig(selection_path, dpi=150)
+        plt.close()

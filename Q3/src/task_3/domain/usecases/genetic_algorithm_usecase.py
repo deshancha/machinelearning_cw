@@ -218,7 +218,7 @@ class GeneticAlgorithmUseCase:
         ax2.legend()
         ax2.grid(True)
         plt.tight_layout()
-        conv_path = os.path.join(plot_dir, "ga_convergence.png")
+        conv_path = os.path.join(plot_dir, "ga_best_fit.png")
         plt.savefig(conv_path, dpi=150)
         plt.close()
 
