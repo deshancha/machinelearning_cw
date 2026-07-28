@@ -31,7 +31,7 @@ class GeneticAlgorithmUseCase:
                     best_profit = sol.total_profit
                     best_params = {"pop_size": pop_size, "generations": gen}
                     
-        self.logger.info(f"Tuning complete. Best params: {best_params} with profit: {best_profit:.1f}k")
+        self.logger.info(f"Hyper Param Tuning Done, Best params: {best_params} with profit: {best_profit:.1f}k")
         return {"best_params": best_params, "best_profit": best_profit, "all_results": results}
 
     def findBestProjects(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8) -> Tuple[AllocationSolution, List[float]]:
