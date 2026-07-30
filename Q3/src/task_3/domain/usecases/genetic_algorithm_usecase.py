@@ -10,7 +10,7 @@ class GeneticAlgorithmUseCase:
         self.logger = logger
 
     # uning_results = ga_solver_usecase.hyperParamTune(instance, pop_sizes=[50, 100, 200, 300], gens=[50, 100, 150, 200])
-    def hyperParamTune(self, instance: AllocationInstance, pop_sizes: List[int], gens: List[int]) -> Dict[str, Any]:
+    def hyperParamTune(self, instance: AllocationInstance, pop_sizes: List[int], gens: List[int], seed: int = 42) -> Dict[str, Any]:
         """
         GA and hyper param tuning with dynamic pop size and generation number
         """
@@ -20,7 +20,7 @@ class GeneticAlgorithmUseCase:
         results = []
         for pop_size in pop_sizes:
             for gen in gens:
-                sol, _ = self.findBestProjects(instance, pop_size=pop_size, generations=gen)
+                sol, _ = self.findBestProjects(instance, pop_size=pop_size, generations=gen, seed=seed)
                 results.append({
                     "pop_size": pop_size,
                     "generations": gen,
@@ -35,8 +35,9 @@ class GeneticAlgorithmUseCase:
         self.logger.info(f"Hyper Param Tuning Done, Best params: {best_params} with profit: {best_profit:.1f}k")
         return {"best_params": best_params, "best_profit": best_profit, "all_results": results}
 
-    def findBestProjects(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8) -> Tuple[AllocationSolution, List[float]]:
-        np.random.seed(42)
+    def findBestProjects(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8, seed: int = 42) -> Tuple[AllocationSolution, List[float]]:
+        if seed is not None:
+            np.random.seed(seed)
         N = len(instance.projects)
         mutation_rate = 1.0 / N
         tournament_size = 3
