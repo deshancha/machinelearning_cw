@@ -94,7 +94,7 @@ class MipSolverUseCase:
         profits = [p.profit for p in instance.projects]
         colors = ['forestgreen' if val == 1 else 'crimson' for val in solution.selection]
         
-        bars = ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
+        ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
         ax.set_title(f"(Selected: {sum(solution.selection)} / {len(solution.selection)} projects)")
         ax.set_xlabel("ID")
         ax.set_ylabel("Profit ($k)")

@@ -49,7 +49,7 @@ class GeneticAlgorithmUseCase:
         history_best = []
         
         best_overall_chromosome = None
-        best_overall_fitness = -1.0
+        best_overall_fitness = -float('inf')
         
         for gen in range(generations):
             # Calculate fitnesses
@@ -90,7 +90,12 @@ class GeneticAlgorithmUseCase:
 
         # Get final solution details
         _, profit, cost, labor, violations = self.evaluate_fitness(best_overall_chromosome, instance)
-        is_feasible = violations == 0
+
+        is_feasible = (
+            violations == 0 
+            and cost <= instance.budget + 1e-5 
+            and labor <= instance.dev_hours_limit + 1e-5
+        )
         
         solution = AllocationSolution(
             selection=best_overall_chromosome,
@@ -106,9 +111,6 @@ class GeneticAlgorithmUseCase:
 
 
     def evaluate_fitness(self, chromosome: List[int], instance: AllocationInstance) -> Tuple[float, float, float, int, List[str]]:
-        """
-        Fitness function, how good a specific solution is and give scores
-        """
         total_profit = 0.0
         total_cost = 0.0
         total_labor = 0.0
@@ -125,23 +127,23 @@ class GeneticAlgorithmUseCase:
         for a, b in instance.mutual_exclusions:
             if chromosome[a] == 1 and chromosome[b] == 1:
                 violation_count += 1
-                
+        
         # dependency constraints
         for a, b in instance.dependencies:
             if chromosome[a] == 1 and chromosome[b] == 0:
                 violation_count += 1
 
         # resource constraints penalties
-        penalty = 0.0
         if total_cost > instance.budget:
-            penalty += 10.0 * (total_cost - instance.budget)
+            violation_count += 1
+            
         if total_labor > instance.dev_hours_limit:
-            penalty += 10.0 * (total_labor - instance.dev_hours_limit)
+            violation_count += 1
 
-        # High penalty for logical vialation, 500 - this is greater than the profit of all single project (100 to 250)
-        penalty += 500.0 * violation_count
-        
-        fitness = total_profit - penalty # could be negative but ok for tounament selection
+        # High penalty for logical + resource vialation, 500 - this is greater than the profit of all single project (100 to 250)
+        penalty = 500.0 * violation_count
+
+        fitness = total_profit - penalty
         
         return fitness, total_profit, total_cost, total_labor, violation_count
 
@@ -198,13 +200,12 @@ class GeneticAlgorithmUseCase:
         profits = [p.profit for p in instance.projects]
         colors = ['forestgreen' if val == 1 else 'crimson' for val in solution.selection]
         
-        bars = ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
+        ax.bar(project_ids, profits, color=colors, alpha=0.85, edgecolor='black', linewidth=0.5)
         ax.set_title(f"Selected {sum(solution.selection)} / {len(solution.selection)} projects)")
         ax.set_xlabel("Proj ID")
         ax.set_ylabel("Profit ($k)")
         ax.set_xticks(project_ids)
-        ax.set_xticklabels([f"P{i}" for i in project_ids], rotation=45, fontsize=9)
-        ax.grid(axis='y', linestyle='--', alpha=0.5)
+        ax.set_xticklabels([f"{i}" for i in project_ids])
         
         plt.tight_layout()
         selection_path = os.path.join(plot_dir, "ga_portfolio_selection.png")
