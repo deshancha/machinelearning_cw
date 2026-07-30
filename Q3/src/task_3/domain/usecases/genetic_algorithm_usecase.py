@@ -35,7 +35,7 @@ class GeneticAlgorithmUseCase:
         return {"best_params": best_params, "best_profit": best_profit, "all_results": results}
 
     def findBestProjects(self, instance: AllocationInstance, pop_size: int = 100, generations: int = 150, crossover_rate: float = 0.8) -> Tuple[AllocationSolution, List[float]]:
-        
+        np.random.seed(42)
         N = len(instance.projects)
         mutation_rate = 1.0 / N
         tournament_size = 3
