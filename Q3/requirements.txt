@@ -4,3 +4,4 @@ pandas>=2.0.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
 dependency-injector==4.49.1
+python-dotenv==1.2.1
