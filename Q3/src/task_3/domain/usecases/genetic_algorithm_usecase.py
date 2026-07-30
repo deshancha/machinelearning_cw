@@ -27,6 +27,7 @@ class GeneticAlgorithmUseCase:
                     "profit": sol.total_profit,
                     "feasible": sol.is_feasible
                 })
+                # feasible and profit is greater -> update best param
                 if sol.is_feasible and sol.total_profit > best_profit:
                     best_profit = sol.total_profit
                     best_params = {"pop_size": pop_size, "generations": gen}
