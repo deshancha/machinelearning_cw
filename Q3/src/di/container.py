@@ -3,7 +3,7 @@ from core.util.logger import LoggerFactory, ILogger
 from task_2.domain.usecases.data_preparation_usecase import DataPreparationUseCase
 from task_3.domain.usecases.genetic_algorithm_usecase import GeneticAlgorithmUseCase
 from task_4.domain.usecases.mip_solver_usecase import MipSolverUseCase
-from task_5.domain.usecases.compare_and_report_usecase import CompareAndReportUseCase
+from task_5.domain.usecases.ga_mip_compare import CompareGAandMIPUseCase
 
 class AppContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
@@ -31,9 +31,10 @@ class AppContainer(containers.DeclarativeContainer):
     )
 
     compare_and_report_usecase = providers.Factory(
-        CompareAndReportUseCase,
+        CompareGAandMIPUseCase,
         logger=logger,
         data_prep=data_preparation_usecase,
         ga_solver=genetic_algorithm_usecase,
         mip_solver=mip_solver_usecase
     )
+
