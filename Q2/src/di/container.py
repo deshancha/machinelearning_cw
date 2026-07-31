@@ -13,6 +13,7 @@ from task_2.domain.usecases.data_cleaning_usecase import DataCleaningUseCase
 
 from task_3.domain.usecases.train_arima_usecase import TrainArimaUseCase
 from task_3.domain.usecases.train_xgb_usecase import TrainXgbUseCase
+from task_3.domain.usecases.train_lstm_usecase import TrainLstmUseCase
 
 from task_4.domain.usecases.garch_modeling_usecase import GarchModelingUseCase
 
@@ -76,6 +77,11 @@ class AppContainer(containers.DeclarativeContainer):
 
     train_xgb_usecase = providers.Factory(
         TrainXgbUseCase,
+        logger=logger
+    )
+
+    train_lstm_usecase = providers.Factory(
+        TrainLstmUseCase,
         logger=logger
     )
 

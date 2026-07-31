@@ -8,6 +8,7 @@ scikit-learn>=1.2.0
 xgboost>=1.7.0
 arch>=6.0.0
 torch>=2.0.0
+darts>=0.24.0
 notebook>=7.0.0
 ipykernel>=6.0.0
 dependency-injector==4.49.1
